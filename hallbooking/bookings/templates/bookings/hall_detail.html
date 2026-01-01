@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ hall.name }} - Hall Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumb">
+        <a href="{% url 'index' %}">Home</a> / <span>{{ hall.name }}</span>
+    </div>
+
+    <div class="hall-detail-container">
+        <div class="hall-detail-header">
+            <div class="detail-image">
+                <img src="{% static 'images/hall-default.png' %}" alt="{{ hall.name }}" class="img-fluid">
+            </div>
+            <div class="detail-info">
+                <h1 class="detail-title">{{ hall.name }}</h1>
+                <p class="detail-location">
+                    <i class="icon">📍</i> {{ hall.location }}
+                </p>
+                <p class="detail-description">{{ hall.description }}</p>
+                
+                <div class="detail-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Capacity:</span>
+                        <span class="spec-value">{{ hall.capacity }} people</span>
+                    </div>
+                </div>
+
+                <div class="amenities-list">
+                    <h4>Amenities</h4>
+                    <div class="amenities-grid">
+                        {% for amenity in amenities %}
+                            <div class="amenity-item">
+                                <i class="icon">✓</i>
+                                <span>{{ amenity }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'book_hall' hall.id %}" class="btn btn-success btn-large">Book This Hall</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-large">Sign in to Book</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if bookings %}
+        <div class="bookings-section">
+            <h3>Upcoming Bookings</h3>
+            <div class="bookings-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Purpose</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                            <td>{{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }}</td>
+                            <td>{{ booking.purpose }}</td>
+                            <td>
+                                <span class="status-badge status-{{ booking.status }}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

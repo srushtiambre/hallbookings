@@ -1,0 +1,69 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        /* Override user-tools separators and layout */
+        #user-tools {
+            padding: 0.18rem 0.4rem !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            gap: 0.18rem !important;
+            flex-wrap: nowrap !important;
+            font-size: 0.65rem !important;
+        }
+
+        #user-tools::before {
+            display: none !important;
+        }
+
+        /* Force compact inline links */
+        #user-tools .user-links {
+            display: flex !important;
+            gap: 0.18rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+        }
+
+        #user-tools .admin-link {
+            padding: 0.08rem 0.18rem !important;
+            font-size: 0.5rem !important;
+            border-radius: 3px !important;
+        }
+
+        #user-tools .link-icon {
+            font-size: 0.65rem !important;
+            line-height: 1 !important;
+        }
+
+        #user-tools .link-text {
+            font-size: 0.6rem !important;
+            display: inline-block !important;
+        }
+    </style>
+{% endblock %}
+
+{% block userlinks %}
+    {% if user.is_active and user.is_staff %}
+        <div class="admin-header-inline">
+            <div class="user-links" role="navigation" aria-label="user links">
+                <a href="/" class="admin-link view-site-link" title="Visit site">
+                    <span class="link-icon">🏠</span><span class="link-text">Visit site</span>
+                </a>
+                <a href="{% url 'admin:password_change' %}" class="admin-link password-link" title="Change password">
+                    <span class="link-icon">🔐</span><span class="link-text">Password</span>
+                </a>
+                <form id="admin-logout-form" action="{% url 'admin:logout' %}" method="post" style="display:inline; margin:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="admin-link logout-link" title="{% trans 'Log out' %}" style="border:none; background:transparent;">
+                        <span class="link-icon">🚪</span><span class="link-text">Log out</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+

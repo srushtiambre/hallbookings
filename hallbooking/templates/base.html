@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}College Hall Booking System{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1 class="logo">🏛️ Hall Booking</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{% url 'index' %}" class="nav-link">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'my_bookings' %}" class="nav-link">My Bookings</a></li>
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'admin:index' %}" class="nav-link">Admin</a></li>
+                        <li><a href="{% url 'pending_bookings' %}" class="nav-link">Pending</a></li>
+                    {% endif %}
+                    <li class="nav-user">
+                        <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                        <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link logout-btn" style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="nav-link login-btn">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+            <button class="close-alert">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 College Hall Booking System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

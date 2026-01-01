@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book {{ hall.name }} - Hall Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="booking-wrapper">
+        <!-- Left Panel: Form -->
+        <div class="booking-form-panel">
+            <div class="form-container">
+                <!-- Breadcrumb & Header -->
+                <div class="form-header">
+                    <div class="breadcrumb-nav">
+                        <a href="{% url 'index' %}" class="breadcrumb-link">Halls</a>
+                        <span class="breadcrumb-separator">/</span>
+                        <a href="{% url 'hall_detail' hall.id %}" class="breadcrumb-link">{{ hall.name }}</a>
+                        <span class="breadcrumb-separator">/</span>
+                        <span class="breadcrumb-current">Book Now</span>
+                    </div>
+                    <h1 class="form-main-title">Book {{ hall.name }}</h1>
+                    <p class="form-subtitle">Complete the form below to submit your booking request</p>
+                </div>
+
+                <!-- Booking Form -->
+                <form method="POST" class="booking-form" id="bookingForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Event Details Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📋 Event Details</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="purpose" class="form-label">
+                                Purpose of Event <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="purpose" 
+                                name="purpose" 
+                                class="form-control" 
+                                placeholder="e.g., Annual Symposium, Graduation Ceremony, Workshop"
+                                required
+                                autocomplete="off"
+                            >
+                            <small class="form-help">Describe the nature of your event</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expected_attendees" class="form-label">
+                                Expected Number of Attendees <span class="required">*</span>
+                            </label>
+                            <div class="input-with-info">
+                                <input 
+                                    type="number" 
+                                    id="expected_attendees" 
+                                    name="expected_attendees" 
+                                    class="form-control" 
+                                    placeholder="Enter number of attendees"
+                                    max="{{ hall.capacity }}" 
+                                    required
+                                    min="1"
+                                >
+                                <span class="capacity-badge">Max: {{ hall.capacity }}</span>
+                            </div>
+                            <small class="form-help">Hall capacity: <strong>{{ hall.capacity }} people</strong></small>
+                        </div>
+                    </div>
+
+                    <!-- Booking Schedule Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📅 Booking Schedule</h3>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="booking_date" class="form-label">
+                                Booking Date <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="date" 
+                                id="booking_date" 
+                                name="booking_date" 
+                                class="form-control date-input" 
+                                required 
+                                min="{% now 'Y-m-d' %}"
+                            >
+                            <small class="form-help">Select a future date</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="start_time" class="form-label">
+                                    Start Time <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="time" 
+                                    id="start_time" 
+                                    name="start_time" 
+                                    class="form-control" 
+                                    required
+                                >
+                                <small class="form-help">When to start</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="end_time" class="form-label">
+                                    End Time <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="time" 
+                                    id="end_time" 
+                                    name="end_time" 
+                                    class="form-control" 
+                                    required
+                                >
+                                <small class="form-help">When to end</small>
+                            </div>
+                        </div>
+
+                        <!-- Availability Check -->
+                        <div class="availability-check" id="availabilityCheck" style="display:none;">
+                            <div class="availability-content" id="availabilityContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success btn-large form-submit-btn" id="submitBtn">
+                            <span class="button-text">Submit Booking Request</span>
+                            <span class="button-icon">✓</span>
+                        </button>
+                        <a href="{% url 'hall_detail' hall.id %}" class="btn btn-outline btn-large">Cancel</a>
+                    </div>
+
+                    <!-- Important Note -->
+                    <div class="form-note">
+                        <div class="note-icon">ℹ️</div>
+                        <div class="note-content">
+                            <strong>Important:</strong> Your booking request will be reviewed by the administration team. 
+                            You'll receive an email notification once it's been approved or rejected.
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Panel: Hall Info -->
+        <div class="booking-info-panel">
+            <div class="hall-info-card">
+                <h3 class="info-card-title">{{ hall.name }}</h3>
+                
+                <div class="info-section">
+                    <p class="info-location">
+                        <span class="icon">📍</span>
+                        {{ hall.location }}
+                    </p>
+                </div>
+
+                <div class="info-specs">
+                    <div class="spec-item">
+                        <span class="spec-icon">👥</span>
+                        <div class="spec-details">
+                            <span class="spec-label">Capacity</span>
+                            <span class="spec-value">{{ hall.capacity }} People</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if hall.description %}
+                <div class="info-section">
+                    <h4 class="info-subtitle">Description</h4>
+                    <p class="info-text">{{ hall.description }}</p>
+                </div>
+                {% endif %}
+
+                {% if amenities %}
+                <div class="info-section">
+                    <h4 class="info-subtitle">Amenities</h4>
+                    <ul class="amenities-checklist">
+                        {% for amenity in amenities %}
+                            <li class="amenity-item">
+                                <span class="amenity-check">✓</span>
+                                <span class="amenity-text">{{ amenity }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="info-divider"></div>
+
+                <div class="info-help">
+                    <p class="help-text">Need help? Contact the administration office for any questions about your booking.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('bookingForm').addEventListener('change', function() {
+        const date = document.getElementById('booking_date').value;
+        const hallId = {{ hall.id }};
+        
+        if (date) {
+            fetch(`/api/check-availability/?hall_id=${hallId}&date=${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    const check = document.getElementById('availabilityCheck');
+                    const content = document.getElementById('availabilityContent');
+                    
+                    if (data.available) {
+                        check.className = 'availability-check available';
+                        content.innerHTML = '<div class="availability-message success"><span class="icon">✓</span> <span>This date appears to be available</span></div>';
+                    } else {
+                        check.className = 'availability-check unavailable';
+                        content.innerHTML = '<div class="availability-message warning"><span class="icon">⚠️</span> <span>This date may have conflicts. Please choose another time slot.</span></div>';
+                    }
+                    check.style.display = 'block';
+                });
+        }
+    });
+
+    // Validate that end time is after start time
+    document.getElementById('end_time').addEventListener('change', function() {
+        const startTime = document.getElementById('start_time').value;
+        const endTime = this.value;
+        if (startTime && endTime && startTime >= endTime) {
+            this.setCustomValidity('End time must be after start time');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+</script>
+{% endblock %}

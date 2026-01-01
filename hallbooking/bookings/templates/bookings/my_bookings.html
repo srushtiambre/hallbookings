@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - Hall Booking{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="my-bookings-container">
+        <div class="bookings-header">
+            <h2>My Bookings</h2>
+            <div class="bookings-stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ bookings|length }}</span>
+                    <span class="stat-label">Total Bookings</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ pending_count }}</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ approved_count }}</span>
+                    <span class="stat-label">Approved</span>
+                </div>
+            </div>
+        </div>
+
+        {% if bookings %}
+            <div class="bookings-list">
+                {% for booking in bookings %}
+                <div class="booking-card">
+                    <div class="booking-header-row">
+                        <h3 class="booking-title">{{ booking.hall.name }}</h3>
+                        <span class="status-badge status-{{ booking.status }}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="booking-info">
+                        <div class="info-item">
+                            <span class="info-label">📅 Date:</span>
+                            <span class="info-value">{{ booking.booking_date|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">🕐 Time:</span>
+                            <span class="info-value">{{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">🎯 Purpose:</span>
+                            <span class="info-value">{{ booking.purpose }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">👥 Attendees:</span>
+                            <span class="info-value">{{ booking.expected_attendees }}</span>
+                        </div>
+                    </div>
+
+                    {% if booking.rejection_reason %}
+                    <div class="rejection-reason">
+                        <strong>Rejection Reason:</strong>
+                        <p>{{ booking.rejection_reason }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="booking-actions">
+                        <a href="{% url 'hall_detail' booking.hall.id %}" class="btn btn-small">View Hall</a>
+                        {% if booking.status in 'pending|approved' %}
+                            <a href="{% url 'cancel_booking' booking.id %}" 
+                               class="btn btn-small btn-danger"
+                               onclick="return confirm('Are you sure you want to cancel this booking?');">
+                                Cancel Booking
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p class="empty-text">📭 You haven't made any bookings yet</p>
+                <a href="{% url 'index' %}" class="btn btn-primary">Book a Hall Now</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
