@@ -60,6 +60,7 @@ class Booking(models.Model):
     end_time = models.TimeField()
     purpose = models.CharField(max_length=200)
     expected_attendees = models.IntegerField()
+    faculty = models.CharField(max_length=50, choices=[('Arts', 'Arts'), ('Commerce', 'Commerce'), ('Science', 'Science')], default='Science')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     approved_by = models.ForeignKey(

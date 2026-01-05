@@ -1,48 +1,75 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h2>Pending Bookings</h2>
-{% if bookings %}
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Hall</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>User</th>
-        <th>Attendees</th>
-        <th>Purpose</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for b in bookings %}
-      <tr>
-        <td>{{ b.id }}</td>
-        <td>{{ b.hall.name }}</td>
-        <td>{{ b.booking_date }}</td>
-        <td>{{ b.start_time }} - {{ b.end_time }}</td>
-        <td>{{ b.user.username }}</td>
-        <td>{{ b.expected_attendees }}</td>
-        <td>{{ b.purpose }}</td>
-        <td>
-          <form method="post" action="{% url 'approve_booking' b.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Approve</button>
-          </form>
+{% block title %}Pending Bookings - Hall Booking{% endblock %}
 
-          <form method="post" action="{% url 'reject_booking' b.id %}" style="display:inline; margin-left:8px;">
-            {% csrf_token %}
-            <input type="text" name="rejection_reason" placeholder="Reason (optional)" />
-            <button type="submit">Reject</button>
-          </form>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <p>No pending bookings.</p>
-{% endif %}
+{% block content %}
+<div class="container" style="max-width: 1200px; margin-top: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Pending Bookings</h1>
+    <a href="{% url 'admin_dashboard' %}" class="btn"
+      style="background: #6c757d; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none;">Back
+      to Dashboard</a>
+  </div>
+
+  <div class="card"
+    style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+    {% if bookings %}
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+          <th style="padding: 1rem; text-align: left; width: 5%;">ID</th>
+          <th style="padding: 1rem; text-align: left; width: 15%;">Hall</th>
+          <th style="padding: 1rem; text-align: left; width: 15%;">Date & Time</th>
+          <th style="padding: 1rem; text-align: left; width: 15%;">User</th>
+          <th style="padding: 1rem; text-align: left; width: 20%;">Purpose</th>
+          <th style="padding: 1rem; text-align: left; width: 30%;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+        <tr style="border-bottom: 1px solid #dee2e6;">
+          <td style="padding: 1rem;">#{{ b.id }}</td>
+          <td style="padding: 1rem;"><strong>{{ b.hall.name }}</strong></td>
+          <td style="padding: 1rem;">
+            <div>{{ b.booking_date }}</div>
+            <div style="font-size: 0.85rem; color: #666;">{{ b.start_time }} - {{ b.end_time }}</div>
+          </td>
+          <td style="padding: 1rem;">
+            <div>{{ b.user.get_full_name|default:b.user.username }}</div>
+            <div style="font-size: 0.85rem; color: #666;">{{ b.expected_attendees }} attendees</div>
+          </td>
+          <td style="padding: 1rem;">{{ b.purpose }}</td>
+          <td style="padding: 1rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <form method="post" action="{% url 'approve_booking' b.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn"
+                  style="background: #28a745; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; width: 100%; text-align: center;">
+                  ✓ Approve
+                </button>
+              </form>
+
+              <form method="post" action="{% url 'reject_booking' b.id %}" style="display: flex; gap: 0.5rem;">
+                {% csrf_token %}
+                <input type="text" name="rejection_reason" placeholder="Reason (optional)"
+                  style="flex: 1; padding: 0.4rem; border: 1px solid #ced4da; border-radius: 4px;">
+                <button type="submit" class="btn"
+                  style="background: #dc3545; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer;">
+                  ✗ Reject
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="padding: 3rem; text-align: center;">
+      <p style="color: #666; font-size: 1.2rem;">No pending bookings found.</p>
+      <p style="color: #999;">Good job! All requests have been processed.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

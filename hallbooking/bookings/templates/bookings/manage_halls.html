@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Halls - Hall Booking{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Manage Halls</h1>
+        <a href="{% url 'add_hall' %}" class="btn"
+            style="background: #28a745; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none;">+
+            Add New Hall</a>
+    </div>
+
+    <div class="card"
+        style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                    <th style="padding: 1rem; text-align: left;">Name</th>
+                    <th style="padding: 1rem; text-align: left;">Capacity</th>
+                    <th style="padding: 1rem; text-align: left;">Location</th>
+                    <th style="padding: 1rem; text-align: center;">Status</th>
+                    <th style="padding: 1rem; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hall in halls %}
+                <tr style="border-bottom: 1px solid #dee2e6;">
+                    <td style="padding: 1rem;">{{ hall.name }}</td>
+                    <td style="padding: 1rem;">{{ hall.get_capacity_display }}</td>
+                    <td style="padding: 1rem;">{{ hall.location }}</td>
+                    <td style="padding: 1rem; text-align: center;">
+                        {% if hall.available %}
+                        <span
+                            style="background: #28a745; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">Active</span>
+                        {% else %}
+                        <span
+                            style="background: #dc3545; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <a href="{% url 'edit_hall' hall.id %}"
+                            style="color: #007bff; text-decoration: none; margin-right: 1rem;">Edit</a>
+                        <a href="{% url 'delete_hall' hall.id %}"
+                            style="color: #dc3545; text-decoration: none;">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: #666;">No halls found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

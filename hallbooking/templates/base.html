@@ -1,12 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}College Hall Booking System{% endblock %}</title>
-    {% load static %}
+    <link rel="icon" href="{% static 'images/hall-default.png' %}">
+    <title>{% block title %}Shikshan Prasarak Sanstha’s{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/css2">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Style -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -17,20 +26,21 @@
             <ul class="nav-menu">
                 <li><a href="{% url 'index' %}" class="nav-link">Home</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'my_bookings' %}" class="nav-link">My Bookings</a></li>
-                    {% if user.is_staff %}
-                        <li><a href="{% url 'admin:index' %}" class="nav-link">Admin</a></li>
-                        <li><a href="{% url 'pending_bookings' %}" class="nav-link">Pending</a></li>
-                    {% endif %}
-                    <li class="nav-user">
-                        <span class="user-name">{{ user.first_name|default:user.username }}</span>
-                        <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-link logout-btn" style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">Logout</button>
-                        </form>
-                    </li>
+                <li><a href="{% url 'my_bookings' %}" class="nav-link">My Bookings</a></li>
+                {% if user.is_staff %}
+                <li><a href="{% url 'admin_dashboard' %}" class="nav-link">Admin Dashboard</a></li>
+                {% endif %}
+                <li class="nav-user">
+                    <span class="user-name">{{ user.first_name|default:user.username }}</span>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link logout-btn"
+                            style="background:none;border:none;padding:0;cursor:pointer;font:inherit;">Logout</button>
+                    </form>
+                </li>
                 {% else %}
-                    <li><a href="{% url 'login' %}" class="nav-link login-btn">Login</a></li>
+                <li><a href="{% url 'login' %}" class="nav-link login-btn">Login</a></li>
+                <li><a href="{% url 'register' %}" class="nav-link register-btn">Register</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -56,11 +66,12 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 College Hall Booking System. All rights reserved.</p>
+            <p>&copy; 2025 Shikshan Prasarak Sanstha’s. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Reports - Hall Booking{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin-top: 2rem;">
+    <h1 style="margin-bottom: 2rem;">Booking Reports</h1>
+
+    <!-- Summary Stats -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="card"
+            style="padding: 1rem; text-align: center; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #666; font-size: 1rem;">Total Bookings</h3>
+            <p style="font-size: 2rem; font-weight: bold; margin: 0.5rem 0 0;">{{ total_bookings }}</p>
+        </div>
+        {% for stat in status_counts %}
+        <div class="card"
+            style="padding: 1rem; text-align: center; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #666; font-size: 1rem; text-transform: capitalize;">{{ stat.status }}</h3>
+            <p
+                style="font-size: 2rem; font-weight: bold; margin: 0.5rem 0 0; 
+                color: {% if stat.status == 'approved' %}#28a745{% elif stat.status == 'pending' %}#ffc107{% elif stat.status == 'rejected' %}#dc3545{% else %}#6c757d{% endif %};">
+                {{ stat.count }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+        <!-- Hall Popularity -->
+        <div class="card"
+            style="padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 1rem;">Bookings by Hall</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #dee2e6;">
+                        <th style="text-align: left; padding: 0.5rem;">Hall Name</th>
+                        <th style="text-align: right; padding: 0.5rem;">Total Bookings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hall in hall_stats %}
+                    <tr style="border-bottom: 1px solid #f2f2f2;">
+                        <td style="padding: 0.75rem 0.5rem;">{{ hall.hall__name }}</td>
+                        <td style="padding: 0.75rem 0.5rem; text-align: right;">{{ hall.count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 1rem;">No data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Activity Log (Simplified as just list of recent bookings) -->
+        <div class="card"
+            style="padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 1rem;">Recent Booking Activity</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #dee2e6;">
+                        <th style="text-align: left; padding: 0.5rem;">Date</th>
+                        <th style="text-align: left; padding: 0.5rem;">User</th>
+                        <th style="text-align: left; padding: 0.5rem;">Hall</th>
+                        <th style="text-align: center; padding: 0.5rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in recent_bookings %}
+                    <tr style="border-bottom: 1px solid #f2f2f2;">
+                        <td style="padding: 0.75rem 0.5rem;">{{ booking.created_at|date:"M d, Y" }}</td>
+                        <td style="padding: 0.75rem 0.5rem;">{{ booking.user.username }}</td>
+                        <td style="padding: 0.75rem 0.5rem;">{{ booking.hall.name }}</td>
+                        <td style="padding: 0.75rem 0.5rem; text-align: center;">
+                            <span
+                                style="font-size: 0.85rem; padding: 0.2rem 0.5rem; border-radius: 4px;
+                            background: {% if booking.status == 'approved' %}#d4edda{% elif booking.status == 'pending' %}#fff3cd{% elif booking.status == 'rejected' %}#f8d7da{% else %}#e2e3e5{% endif %};
+                            color: {% if booking.status == 'approved' %}#155724{% elif booking.status == 'pending' %}#856404{% elif booking.status == 'rejected' %}#721c24{% else %}#383d41{% endif %};">
+                                {{ booking.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 1rem;">No recent activity</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

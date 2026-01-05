@@ -6,52 +6,52 @@
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1 class="hero-title">College Hall Booking System</h1>
-        <p class="hero-subtitle">Book your preferred hall for events, meetings, and celebrations</p>
+        <h1 class="hero-title">Shikshan Prasarak Sanstha’s</h1>
+        <p class="hero-subtitle">S. N. Arts, D. J. M. Commerce & B. N. S. Science College (Autonomous), Sangamner</p>
     </div>
 </div>
 
 <div class="container">
     <section class="halls-section">
         <h2 class="section-title">Available Halls</h2>
-        
+
         {% if halls %}
-            <div class="halls-grid">
-                {% for hall in halls %}
-                <div class="hall-card">
-                    <div class="hall-image">
-                        <img src="{% static 'images/hall-default.png' %}" alt="{{ hall.name }}" class="img-fluid">
-                        <span class="capacity-badge">
-                            <i class="icon">👥</i> {{ hall.capacity }}
-                        </span>
-                    </div>
-                    <div class="hall-content">
-                        <h3 class="hall-name">{{ hall.name }}</h3>
-                        <p class="hall-location">
-                            <i class="icon">📍</i> {{ hall.location }}
-                        </p>
-                        <p class="hall-description">{{ hall.description|truncatewords:15 }}</p>
-                        <div class="amenities-preview">
-                            {% for amenity in hall.amenities_list|slice:":2" %}
-                                <span class="amenity-tag">{{ amenity }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="hall-actions">
-                        <a href="{% url 'hall_detail' hall.id %}" class="btn btn-primary btn-block">View Details</a>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'book_hall' hall.id %}" class="btn btn-success btn-block">Book Now</a>
-                        {% else %}
-                            <a href="{% url 'login' %}" class="btn btn-outline btn-block">Sign in to Book</a>
-                        {% endif %}
+        <div class="halls-grid">
+            {% for hall in halls %}
+            <div class="hall-card">
+                <div class="hall-image">
+                    <img src="{% static 'images/hall-default.png' %}" alt="{{ hall.name }}" class="img-fluid">
+                    <span class="capacity-badge">
+                        <i class="icon">👥</i> {{ hall.capacity }}
+                    </span>
+                </div>
+                <div class="hall-content">
+                    <h3 class="hall-name">{{ hall.name }}</h3>
+                    <p class="hall-location">
+                        <i class="icon">📍</i> {{ hall.location }}
+                    </p>
+                    <p class="hall-description">{{ hall.description|truncatewords:15 }}</p>
+                    <div class="amenities-preview">
+                        {% for amenity in hall.amenities_list|slice:":2" %}
+                        <span class="amenity-tag">{{ amenity }}</span>
+                        {% endfor %}
                     </div>
                 </div>
-                {% endfor %}
+                <div class="hall-actions">
+                    <a href="{% url 'hall_detail' hall.id %}" class="btn btn-primary btn-block">View Details</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'book_hall' hall.id %}" class="btn btn-success btn-block">Book Now</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline btn-block">Sign in to Book</a>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <div class="empty-state">
-                <p class="empty-text">No halls available at the moment.</p>
-            </div>
+        <div class="empty-state">
+            <p class="empty-text">No halls available at the moment.</p>
+        </div>
         {% endif %}
     </section>
 

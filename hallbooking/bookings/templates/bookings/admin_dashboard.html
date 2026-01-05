@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Hall Booking{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin-top: 3rem;">
+    <div style="margin-bottom: 3rem;">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; color: var(--dark);">Admin Dashboard</h1>
+        <p style="color: var(--text-light);">Welcome back, {{ user.first_name|default:user.username }}</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Pending Requests Card -->
+        <div class="dashboard-card pending">
+            <div>
+                <h3 class="card-title">Pending Requests</h3>
+                <p class="card-value">{{ pending_count|default:"0" }}</p>
+            </div>
+            <a href="{% url 'pending_bookings' %}" class="card-link">Review Requests &rarr;</a>
+        </div>
+
+        <!-- Manage Halls Card -->
+        <div class="dashboard-card halls">
+            <div>
+                <h3 class="card-title">Total Halls</h3>
+                <p class="card-value">{{ total_halls|default:"0" }}</p>
+            </div>
+            <a href="{% url 'manage_halls' %}" class="card-link">Manage Halls &rarr;</a>
+        </div>
+
+        <!-- Reports Card -->
+        <div class="dashboard-card reports">
+            <div>
+                <h3 class="card-title">Analytics</h3>
+                <p style="font-size: 1.1rem; color: var(--text); margin-bottom: 1.5rem; margin-top: 1rem;">View stats &
+                    reports</p>
+            </div>
+            <a href="{% url 'admin_reports' %}" class="card-link">View Reports &rarr;</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

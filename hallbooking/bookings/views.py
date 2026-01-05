@@ -12,6 +12,26 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 
 
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+
+def register(request):
+    """User registration view"""
+    if request.user.is_authenticated:
+        return redirect('index')
+        
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Registration successful!')
+            return redirect('index')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'bookings/register.html', {'form': form})
+
 def index(request):
     """Home page with hall listing"""
     halls = Hall.objects.filter(available=True)
@@ -49,7 +69,11 @@ def book_hall(request, hall_id):
             start_time = request.POST.get('start_time')
             end_time = request.POST.get('end_time')
             purpose = request.POST.get('purpose')
-            expected_attendees = int(request.POST.get('expected_attendees'))
+            expected_attendees_val = request.POST.get('expected_attendees')
+            if not expected_attendees_val:
+                raise ValueError("Expected attendees is required")
+            expected_attendees = int(expected_attendees_val)
+            faculty = request.POST.get('faculty')
             
             booking = Booking(
                 hall=hall,
@@ -59,6 +83,7 @@ def book_hall(request, hall_id):
                 end_time=end_time,
                 purpose=purpose,
                 expected_attendees=expected_attendees,
+                faculty=faculty,
                 status='pending'
             )
             booking.full_clean()
@@ -85,6 +110,9 @@ def booking_confirmation(request, booking_id):
 @login_required(login_url='login')
 def my_bookings(request):
     """Display user's bookings"""
+    if request.user.is_staff:
+        return redirect('admin_dashboard')
+        
     bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
     
     context = {
@@ -164,3 +192,82 @@ def reject_booking(request, booking_id):
     booking.save()
     messages.success(request, f'Booking #{booking.id} rejected.')
     return redirect('pending_bookings')
+
+
+@staff_member_required
+def admin_dashboard(request):
+    """Admin dashboard to manage bookings and halls"""
+    context = {
+        'pending_count': Booking.objects.filter(status='pending').count(),
+        'total_halls': Hall.objects.count(),
+    }
+    return render(request, 'bookings/admin_dashboard.html', context)
+
+from .forms import HallForm
+
+@staff_member_required
+def manage_halls(request):
+    """List and manage halls"""
+    halls = Hall.objects.all()
+    return render(request, 'bookings/manage_halls.html', {'halls': halls})
+
+@staff_member_required
+def add_hall(request):
+    """Add a new hall"""
+    if request.method == 'POST':
+        form = HallForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'New hall added successfully!')
+            return redirect('manage_halls')
+    else:
+        form = HallForm()
+    return render(request, 'bookings/hall_form.html', {'form': form})
+
+@staff_member_required
+def edit_hall(request, hall_id):
+    """Edit an existing hall"""
+    hall = get_object_or_404(Hall, id=hall_id)
+    if request.method == 'POST':
+        form = HallForm(request.POST, instance=hall)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Hall updated successfully!')
+            return redirect('manage_halls')
+    else:
+        form = HallForm(instance=hall)
+    return render(request, 'bookings/hall_form.html', {'form': form})
+
+@staff_member_required
+def delete_hall(request, hall_id):
+    """Delete a hall"""
+    hall = get_object_or_404(Hall, id=hall_id)
+    if request.method == 'POST':
+        hall.delete()
+        messages.success(request, 'Hall deleted successfully!')
+        return redirect('manage_halls')
+    return render(request, 'bookings/hall_confirm_delete.html', {'hall': hall})
+
+
+from django.db.models import Count
+
+@staff_member_required
+def admin_reports(request):
+    """View booking reports"""
+    # Summary stats
+    total_bookings = Booking.objects.count()
+    status_counts = Booking.objects.values('status').annotate(count=Count('id'))
+    
+    # Hall popularity
+    hall_stats = Booking.objects.values('hall__name').annotate(count=Count('id')).order_by('-count')
+    
+    # Recent activity
+    recent_bookings = Booking.objects.select_related('user', 'hall').order_by('-created_at')[:10]
+    
+    context = {
+        'total_bookings': total_bookings,
+        'status_counts': status_counts,
+        'hall_stats': hall_stats,
+        'recent_bookings': recent_bookings,
+    }
+    return render(request, 'bookings/admin_reports.html', context)

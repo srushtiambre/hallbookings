@@ -5,8 +5,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Shikshan Prasarak Sanstha’s</title>
+    <title>Admin Login - Shikshan Prasarak Sanstha’s</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Specific overrides for admin login to distinguish it */
+        .login-page {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+        }
+
+        .login-title {
+            color: #d32f2f;
+            /* Reddish tone for admin to signify power/caution */
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #d32f2f, #c62828);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+        }
+    </style>
 </head>
 
 <body class="login-page">
@@ -15,9 +34,9 @@
             <div class="login-card">
                 <!-- Header -->
                 <div class="login-header">
-                    <div class="login-logo">🏛️</div>
-                    <h1 class="login-title">Hall Booking System</h1>
-                    <p class="login-subtitle">Secure Access Portal</p>
+                    <div class="login-logo">🛡️</div>
+                    <h1 class="login-title">Admin Portal</h1>
+                    <p class="login-subtitle">Restricted Access</p>
                 </div>
 
                 <!-- Error Messages -->
@@ -45,7 +64,7 @@
                         <div class="input-wrapper">
                             <input type="text" name="username" id="id_username"
                                 class="form-control login-input {% if form.username.errors %}input-error{% endif %}"
-                                placeholder="Enter your username" required autofocus autocomplete="username"
+                                placeholder="Admin Username" required autofocus autocomplete="username"
                                 aria-label="Username" aria-describedby="username-help">
                         </div>
                         {% if form.username.errors %}
@@ -65,7 +84,7 @@
                         <div class="input-wrapper password-wrapper">
                             <input type="password" name="password" id="id_password"
                                 class="form-control login-input {% if form.password.errors %}input-error{% endif %}"
-                                placeholder="Enter your password" required autocomplete="current-password"
+                                placeholder="Admin Password" required autocomplete="current-password"
                                 aria-label="Password" aria-describedby="password-help">
                             <button type="button" class="toggle-password" aria-label="Toggle password visibility"
                                 onclick="togglePasswordVisibility()">
@@ -82,34 +101,28 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="btn btn-primary btn-large btn-block login-submit">
-                        <span class="button-text">Sign In</span>
+                        <span class="button-text">Login to Dashboard</span>
                         <span class="button-icon">→</span>
                     </button>
                 </form>
 
                 <!-- Footer Info -->
                 <div class="login-footer">
-                    <p class="footer-support">Issues logging in? Contact your college administrator.</p>
-                    <p class="footer-support" style="margin-top: 15px;">
-                        <a href="{% url 'admin_login' %}"
-                            style="color: #d32f2f; font-weight: bold; font-size: 1rem; text-decoration: underline;">Are
-                            you Admin?</a>
-                    </p>
+                    <p class="footer-support"><a href="{% url 'login' %}">← Back to Staff Login</a></p>
                 </div>
             </div>
         </div>
 
         <!-- Right Side Info Panel (Desktop Only) -->
-        <div class="login-info-panel">
+        <div class="login-info-panel" style="background: rgba(255, 255, 255, 0.1);">
             <div class="info-content">
-                <h2>College Hall Booking</h2>
-                <p>Manage your events with ease. Book halls, track approvals, and streamline your college's venue
-                    management.</p>
+                <h2>Administration</h2>
+                <p>Manage bookings, approve requests, and oversee hall availability.</p>
                 <ul class="features-list">
-                    <li>✓ Easy Hall Reservation</li>
-                    <li>✓ Real-time Availability</li>
-                    <li>✓ Instant Confirmation</li>
-                    <li>✓ Admin Approval Workflow</li>
+                    <li>✓ Approve/Reject Bookings</li>
+                    <li>✓ Manage Halls</li>
+                    <li>✓ View Reports</li>
+                    <li>✓ User Management</li>
                 </ul>
             </div>
         </div>
@@ -130,10 +143,6 @@
             }
         }
     </script>
-    </div>
-    </div>
-
-    <script src="{% static 'js/main.js' %}"></script>
 </body>
 
 </html>
